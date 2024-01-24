@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.github.defaulterrr.protocgenpgx.annotations;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/defaulterrr/protoc-gen-pgx/pb";
+
+
+extend google.protobuf.MessageOptions {
+    bool shouldGenerate = 1036;
+    string tableName = 1037;
+}

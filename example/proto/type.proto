@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.github.defaulterrr.protocgenpgx;
+
+import "google/protobuf/descriptor.proto";
+import "annotations/annotations.proto";
+
+option go_package = "github.com/defaulterrr/protoc-gen-pgx/pb";
+
+message Person {
+    option (com.github.defaulterrr.protocgenpgx.annotations.shouldGenerate) = true;
+    option (com.github.defaulterrr.protocgenpgx.annotations.tableName) = "persons";
+    string name = 1;
+}
