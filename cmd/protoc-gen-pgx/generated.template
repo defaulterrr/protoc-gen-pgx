@@ -1,27 +1,26 @@
-type PersonsRepository struct {
+type {{ .MainTypeCapitalized }}Repository struct {
 	pool *pgxpool.Pool
 }
 
-func NewPersonsRepository(pool *pgxpool.Pool) *PersonsRepository {
-	return &PersonsRepository{
+func New{{ .MainTypeCapitalized }}Repository(pool *pgxpool.Pool) *{{ .MainTypeCapitalized }}Repository {
+	return &{{ .MainTypeCapitalized }}Repository{
 		pool: pool,
 	}
 }
 
-type Person struct {
+type {{ .MainTypeCapitalized }} struct {
 	{{ range .Types }}
-	{{ .Name }} {{ .GoType }}
-	{{ end }}
+	{{ .Name }}	{{ .GoType }}{{ end }}
 }
 
 const insertQuery = `
-INSERT INTO {{.Table}} 
+INSERT INTO {{.TableName}} 
 ({{ range $index, $element := .Types }}{{ if $index}},{{end}}{{.Name }}{{end}})
 VALUES 
 ({{ range $index, $element := .Types }}{{ if $index}}, {{end}}@{{ $element.Name }}{{ end }})
 `
 
-func (repo *PersonsRepository) InsertPerson(ctx context.Context, person Person) error {
+func (repo *{{ .MainTypeCapitalized }}Repository) Insert{{ .MainTypeCapitalized }}(ctx context.Context, {{ .MainTypeLowercased }} {{ .MainTypeCapitalized }}) error {
 	conn, err := repo.pool.Acquire(ctx)
 	if err != nil {
 		return err
@@ -29,11 +28,11 @@ func (repo *PersonsRepository) InsertPerson(ctx context.Context, person Person) 
 	defer conn.Release()
 
 	args := pgx.NamedArgs{
-		{{ range .Types }}"{{ .Name }}": person.{{ .Name }},
+		{{ range .Types }}"{{ .Name }}": {{ .MainTypeLowercased }}.{{ .Name }},
 	{{ end }}}
 
 	if _, err := conn.Exec(ctx, insertQuery, args); err != nil {
-		return fmt.Errorf("failed to insert data into persons table: %w", err)
+		return fmt.Errorf("failed to insert data into {{ .TableName }} table: %w", err)
 	}
 
 	return nil

@@ -11,4 +11,12 @@ message Person {
     option (com.github.defaulterrr.protocgenpgx.annotations.shouldGenerate) = true;
     option (com.github.defaulterrr.protocgenpgx.annotations.tableName) = "persons";
     string name = 1;
+    int64 id = 2;
+}
+
+message Tester {
+    option (com.github.defaulterrr.protocgenpgx.annotations.shouldGenerate) = true;
+    option (com.github.defaulterrr.protocgenpgx.annotations.tableName) = "testers";
+    string kale = 1;
+    int64 tt = 2;
 }
