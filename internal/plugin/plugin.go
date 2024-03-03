@@ -6,14 +6,11 @@ import (
 	"strings"
 	"text/template"
 
-	pb "github.com/defaulterrr/protoc-gen-pgx/pb/annotations"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
 	"google.golang.org/protobuf/compiler/protogen"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 type Meta struct {
@@ -97,23 +94,5 @@ func PostgresTypeFromProtobufType(pbtype *protogen.Field) (string, error) {
 }
 
 func PostgresTableNameForMessage(message *protogen.Message) string {
-	tableName, ok := getTableNameFromOptions(message.Desc.Options().(*descriptorpb.MessageOptions))
-	if ok {
-		return tableName
-	}
 	return strings.ToLower(string(message.Desc.Name()))
-}
-
-func getTableNameFromOptions(in *descriptorpb.MessageOptions) (string, bool) {
-	if in == nil {
-		return "", false
-	}
-
-	v := proto.GetExtension(in, pb.E_TableName)
-	if v == nil {
-		return "", false
-	}
-
-	shouldGenerate, ok := v.(string)
-	return shouldGenerate, ok
 }

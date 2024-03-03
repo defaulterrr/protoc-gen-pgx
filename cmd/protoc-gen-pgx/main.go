@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
+	pb "github.com/defaulterrr/protoc-gen-pgx/internal/pb/annotations"
 	"github.com/defaulterrr/protoc-gen-pgx/internal/plugin"
-	pb "github.com/defaulterrr/protoc-gen-pgx/pb/annotations"
 	"github.com/spf13/pflag"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
@@ -66,6 +66,11 @@ func main() {
 					return err
 				}
 
+				tableName, ok := getTableNameFromOptions(message.Desc.Options().(*descriptorpb.MessageOptions))
+				if ok {
+					messageMeta.TableName = tableName
+				}
+
 				messageFileContents, err := plugin.GenerateFileForType(messageMeta, template)
 				if err != nil {
 					return err
@@ -106,4 +111,18 @@ func shouldGenerate(in *descriptorpb.MessageOptions) bool {
 		return false
 	}
 	return shouldGenerate
+}
+
+func getTableNameFromOptions(in *descriptorpb.MessageOptions) (string, bool) {
+	if in == nil {
+		return "", false
+	}
+
+	v := proto.GetExtension(in, pb.E_TableName)
+	if v == nil {
+		return "", false
+	}
+
+	shouldGenerate, ok := v.(string)
+	return shouldGenerate, ok
 }
